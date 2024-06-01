@@ -1,14 +1,32 @@
-openapi: "3.0.3"
+openapi: "3.1.0"
 info:
-  title: "Application API"
-  description: "Application API"
+  title: "host API"
+  description: "host API"
   version: "1.0.0"
 servers:
-  - url: "http://0.0.0.0:8080"
+- url: "https://host"
 paths:
+  /html-freemarker:
+    get:
+      description: ""
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/FreeMarkerContent"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    template: "index.ftl"
+                    model: "null"
+                    etag: ""
+                    contentType: "null"
   /:
     get:
-      description: "Hello World!"
+      description: ""
       responses:
         "200":
           description: "OK"
@@ -20,4 +38,48 @@ paths:
                 Example#1:
                   value: "Hello World!"
 components:
-  schemas: { }
+  schemas:
+    Object:
+      type: "object"
+      properties: {}
+    HeaderValueParam:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        value:
+          type: "string"
+        escapeValue:
+          type: "boolean"
+      required:
+      - "name"
+      - "value"
+    ContentType:
+      type: "object"
+      properties:
+        contentType:
+          type: "string"
+        contentSubtype:
+          type: "string"
+        parameters:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/HeaderValueParam"
+      required:
+      - "contentType"
+      - "contentSubtype"
+      - "parameters"
+    FreeMarkerContent:
+      type: "object"
+      properties:
+        template:
+          type: "string"
+        model:
+          $ref: "#/components/schemas/Object"
+        etag:
+          type: "string"
+        contentType:
+          $ref: "#/components/schemas/ContentType"
+      required:
+      - "template"
+      - "contentType"
