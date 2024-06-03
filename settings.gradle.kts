@@ -1,1 +1,1 @@
-rootProject.name = "host"
+rootProject.name = "smart-lodge"
