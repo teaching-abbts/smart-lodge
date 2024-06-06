@@ -11,6 +11,6 @@ fun Application.configureRouting() {
     singlePageApplication { vue("src/main/vue-project/dist") }
 
     // Static plugin. Try to access `/static/index.html`
-    staticFiles("/static", File("static"))
+    staticFiles("/static", File("src/main/resources/static"))
   }
 }
