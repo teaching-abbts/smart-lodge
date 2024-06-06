@@ -9,7 +9,7 @@
     "build-watch": "run-p type-check-watch \"build-only-watch {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
-    "build-only-watch": "vite build --watch",
+    "build-only-watch": "vite build --mode development --watch",
     "type-check": "vue-tsc --build --force",
     "type-check-watch": "vue-tsc --build --force --watch",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
