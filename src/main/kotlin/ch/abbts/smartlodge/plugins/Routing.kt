@@ -7,11 +7,10 @@ import io.ktor.server.routing.*
 import java.io.File
 
 fun Application.configureRouting() {
-    routing {
-        get("/") {
-            call.respondText("Hello World!")
-        }
-        // Static plugin. Try to access `/static/index.html`
-        staticFiles("/static", File("static"))
-    }
+  routing {
+    singlePageApplication { vue("src/main/vue-project/dist") }
+
+    // Static plugin. Try to access `/static/index.html`
+    staticFiles("/static", File("static"))
+  }
 }
