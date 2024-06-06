@@ -1,56 +1,57 @@
 package ch.abbts.smartlodge
 
-import ch.abbts.smartlodge.plugins.configureHTTP
-import ch.abbts.smartlodge.plugins.configureRouting
-import ch.abbts.smartlodge.plugins.configureSerialization
-import ch.abbts.smartlodge.plugins.configureTemplating
+import ch.abbts.smartlodge.plugins.*
 import io.ktor.network.tls.certificates.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import java.io.File
 
-fun main() {
-    val env = applicationEngineEnvironment {
-        envConfig()
-    }
-    embeddedServer(Netty, env)
-        .start(wait = true)
-}
+const val KEY_STORE_PASSWORD = "123456"
+const val KEY_ALIAS = "sampleAlias"
+const val PRIVATE_KEY_PASSWORD = "foobar"
+const val HTTP_PORT = 8080
+const val HTTPS_PORT = 8443
+const val HOST_BINDING = "0.0.0.0"
 
 fun Application.hostModule() {
-    configureTemplating()
-    configureSerialization()
-    configureHTTP()
-    configureRouting()
+  configureTemplating()
+  configureSerialization()
+  configureHTTP()
+  configureRouting()
 }
 
 fun ApplicationEngineEnvironmentBuilder.envConfig() {
-    val keyStoreFile = File("build/keystore.jks")
-    val keyStore = buildKeyStore {
-        certificate("sampleAlias") {
-            password = "foobar"
-            domains = listOf("127.0.0.1", "0.0.0.0", "localhost")
-        }
-    }
 
-    keyStore.saveToFile(keyStoreFile, "123456")
-
-    module {
-        hostModule()
+  val keyStoreFile = File("build/keystore.jks")
+  val keyStore = buildKeyStore {
+    certificate(KEY_ALIAS) {
+      password = PRIVATE_KEY_PASSWORD
+      domains = listOf("127.0.0.1", "localhost", HOST_BINDING)
     }
+  }
 
-    connector {
-        host = "0.0.0.0"
-        port = 8080
-    }
+  keyStore.saveToFile(keyStoreFile, KEY_STORE_PASSWORD)
 
-    sslConnector(
-        keyStore = keyStore,
-        keyAlias = "sampleAlias",
-        keyStorePassword = { "123456".toCharArray() },
-        privateKeyPassword = { "foobar".toCharArray() }) {
-        port = 8443
-        keyStorePath = keyStoreFile
-    }
+  module { hostModule() }
+
+  connector {
+    host = HOST_BINDING
+    port = HTTP_PORT
+  }
+
+  sslConnector(
+      keyStore = keyStore,
+      keyAlias = KEY_ALIAS,
+      keyStorePassword = { KEY_STORE_PASSWORD.toCharArray() },
+      privateKeyPassword = { PRIVATE_KEY_PASSWORD.toCharArray() }
+  ) {
+    port = HTTPS_PORT
+    keyStorePath = keyStoreFile
+  }
+}
+
+fun main() {
+  val env = applicationEngineEnvironment { envConfig() }
+  embeddedServer(Netty, env).start(wait = true)
 }
