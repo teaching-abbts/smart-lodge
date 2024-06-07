@@ -37,3 +37,33 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests-jvm")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 }
+
+tasks.register<Exec>("build-vue") {
+  group = "build"
+  description = "builds the vue-project."
+  workingDir = File("src/main/vue-project")
+
+  val npmScript = "build"
+
+  if (System.getProperty("os.name").lowercase().contains("windows")) {
+    commandLine("cmd.exe", "/C", "npm run $npmScript")
+  }
+  else {
+    commandLine("npm", "run", npmScript)
+  }
+}
+
+tasks.register<Exec>("run-vue-watch") {
+  group = "application"
+  description = "builds the vue-project continuously."
+  workingDir = File("src/main/vue-project")
+
+  val npmScript = "build-watch"
+
+  if (System.getProperty("os.name").lowercase().contains("windows")) {
+    commandLine("cmd.exe", "/C", "npm run $npmScript")
+  }
+  else {
+    commandLine("npm", "run", npmScript)
+  }
+}
