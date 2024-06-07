@@ -1,18 +1,17 @@
 package ch.abbts.smartlodge.plugins
 
-import io.ktor.http.HttpStatusCode
+import io.ktor.http.*
 import io.ktor.http.content.*
-import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.http.content.*
+import io.ktor.server.plugins.swagger.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.serialization.Serializable
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
-import kotlinx.serialization.*
-import kotlinx.serialization.json.*
 
 const val IMAGE_UPLOAD_DIRECTORY = "src/main/resources/images"
 
@@ -67,6 +66,8 @@ fun Application.configureRouting() {
 
       call.response.status(HttpStatusCode.OK)
     }
+
+    swaggerUI(path = "openapi")
 
     // Static plugin. Try to access `/static/index.html`
     staticFiles("/static", File("src/main/resources/static"))
