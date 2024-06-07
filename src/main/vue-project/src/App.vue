@@ -5,8 +5,8 @@ import FileInput from './components/FileInput.vue'
 
 const fotoalbum = ref<{ fotos: Foto[] }>()
 const filtertext = ref()
-const imgWidth = ref()
-const uploadFile = ref<File | undefined>()
+const imgWidth = ref<string>('200px')
+const uploadFile = ref<File | Array<File>>()
 const uploadFileFieldAccept = '.jpg'
 
 const fotos = computed(() => {
@@ -39,9 +39,7 @@ async function onButtonUploadClick() {
   if (uploadFile.value) {
     const formData = new FormData()
 
-    console.log(uploadFile.value)
-
-    formData.append('uploadFile', uploadFile.value)
+    formData.append('uploadFile', uploadFile.value as File)
 
     const response = await fetch('/upload-images', {
       method: 'POST',
@@ -51,6 +49,7 @@ async function onButtonUploadClick() {
     if (!response.ok) {
       alert(response.statusText)
     } else {
+      uploadFile.value = undefined
       fetchFotoalbumFromServer()
     }
   }
@@ -69,7 +68,6 @@ onMounted(fetchFotoalbumFromServer)
     <div class="control-item">
       <label>Image width:</label>
       <select v-model="imgWidth">
-        <option selected style="display: none" value>-- Select a width --</option>
         <option v-for="imgWidth in imgWidths" :key="imgWidth" :value="imgWidth">
           {{ imgWidth }}
         </option>

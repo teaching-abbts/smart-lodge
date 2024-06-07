@@ -1,8 +1,11 @@
 <script setup lang="ts">
-defineProps({
+import { computed, ref, watch } from 'vue'
+
+const props = defineProps({
   modelValue: {
     required: true,
-    type: File
+    default: undefined,
+    type: [File, Array<File>]
   },
   accept: {
     required: false,
@@ -11,20 +14,37 @@ defineProps({
 })
 
 const emit = defineEmits(['update:modelValue'])
+const input = ref<HTMLInputElement>()
+const modelValueWrapper = computed(() => props.modelValue)
+
+watch(
+  modelValueWrapper,
+  (newVal) => {
+    if (newVal === undefined && input.value) {
+      input.value.value = ''
+    }
+  },
+  {
+    immediate: true
+  }
+)
 
 function onFileInputChange(event: Event) {
   const inputElement = event.target as HTMLInputElement
+  const files = inputElement.files
 
-  if (inputElement && inputElement.files) {
-    const file = inputElement.files[0]
-
-    if (file) {
-      emit('update:modelValue', file)
+  if (files) {
+    if (files.length === 0) {
+      emit('update:modelValue', null)
+    } else if (files.length === 1) {
+      emit('update:modelValue', files[0])
+    } else {
+      emit('update:modelValue', Array.from(files))
     }
   }
 }
 </script>
 
 <template>
-  <input ref="input" type="file" :value="modelValue" :accept="accept" @change="onFileInputChange" />
+  <input ref="input" type="file" :accept="props.accept" @change="onFileInputChange" />
 </template>
