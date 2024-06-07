@@ -35,7 +35,7 @@ fun Application.configureRouting() {
       val fotos = mutableListOf<Foto>()
 
       for (image in images) {
-        val url = "/image/" + image.name
+        val url = "/image/${image.name}"
         val name = image.nameWithoutExtension
         val newFoto = Foto(url, name)
 
@@ -50,9 +50,11 @@ fun Application.configureRouting() {
       val multipartData = call.receiveMultipart()
 
       multipartData.forEachPart { part ->
+        println("*** Uploading ${part.contentType}, ${part.name}")
         when (part) {
           is PartData.FileItem -> {
             val fileName = part.originalFileName as String
+            println("*** originalFileName: $fileName")
             val fileBytes = part.streamProvider().readBytes()
             val file = File("$IMAGE_UPLOAD_DIRECTORY/$fileName")
             // Ensure the parent directory exists
