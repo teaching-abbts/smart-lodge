@@ -53,6 +53,14 @@ fun Exec.runCommandLine(vararg arguments: String) {
   runCommandLine(CommandLineConfig(arguments.joinToString(" ")))
 }
 
+tasks.register<Exec>("install-vue") {
+  group = "build setup"
+  description = "installs all the npm packages for the the vue-project."
+  workingDir = File("src/main/vue-project")
+
+  runCommandLine("npm", "ci")
+}
+
 tasks.register<Exec>("build-vue") {
   group = "build"
   description = "builds the vue-project."
@@ -74,6 +82,7 @@ tasks.register<Exec>("build-continuously") {
   description = "builds the Ktor project continuously."
   workingDir = File(".")
 
-  val config = CommandLineConfig("gradlew build -t", "gradlew.bat build -t")
+  val arguments = "build -t -x test -i"
+  val config = CommandLineConfig("gradlew $arguments", "gradlew.bat $arguments")
   runCommandLine(config)
 }
