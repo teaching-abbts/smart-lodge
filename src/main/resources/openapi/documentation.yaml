@@ -1,12 +1,12 @@
-openapi: "3.1.0"
+openapi: "3.0.0"
 info:
-  title: "host API"
-  description: "host API"
+  title: "smart_lodge API"
+  description: "smart_lodge API"
   version: "1.0.0"
 servers:
-- url: "https://host"
+- url: "https://smart_lodge"
 paths:
-  /html-freemarker:
+  /fotoalbum:
     get:
       description: ""
       responses:
@@ -15,28 +15,32 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/FreeMarkerContent"
+                $ref: "#/components/schemas/Fotoalbum"
               examples:
                 Example#1:
                   description: ""
                   value:
-                    template: "index.ftl"
-                    model: "null"
-                    etag: ""
-                    contentType: "null"
-  /:
+                    fotos: []
+  /image/{imageName}:
     get:
       description: ""
+      parameters:
+      - name: "imageName"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
       responses:
         "200":
-          description: "OK"
+          description: "OK <br> A file response"
           content:
-            text/plain:
+            application/*:
               schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "Hello World!"
+                type: "object"
+                format: "binary"
+  /upload-images:
+    post:
+      description: ""
 components:
   schemas:
     Object:
@@ -83,3 +87,22 @@ components:
       required:
       - "template"
       - "contentType"
+    Foto:
+      type: "object"
+      properties:
+        url:
+          type: "string"
+        name:
+          type: "string"
+      required:
+      - "url"
+      - "name"
+    Fotoalbum:
+      type: "object"
+      properties:
+        fotos:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Foto"
+      required:
+      - "fotos"

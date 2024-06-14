@@ -69,9 +69,7 @@ fun Application.configureRouting() {
       call.response.status(HttpStatusCode.OK)
     }
 
-    swaggerUI(path = "openapi")
-
-    // Static plugin. Try to access `/static/index.html`
-    staticFiles("/static", File("src/main/resources/static"))
+    staticFiles("/openapi", File("src/main/resources/openapi"))
+    swaggerUI(path = "swagger", swaggerFile = "openapi/documentation.yaml")
   }
 }

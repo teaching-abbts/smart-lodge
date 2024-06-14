@@ -51,6 +51,8 @@ fun ApplicationEngineEnvironmentBuilder.envConfig() {
 //    port = HTTPS_PORT
 //    keyStorePath = keyStoreFile
 //  }
+
+  watchPaths = listOf("classes")
 }
 
 fun main() {

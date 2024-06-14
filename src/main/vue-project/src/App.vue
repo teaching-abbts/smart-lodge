@@ -61,21 +61,21 @@ onMounted(fetchFotoalbumFromServer)
 <template>
   <div class="controls">
     <div class="control-item">
-      <label>Upload:</label>
-      <FileInput v-model="uploadFile" :accept="uploadFileFieldAccept" />
+      <label for="upload-file">Upload:</label>
+      <FileInput id="upload-file" v-model="uploadFile" :accept="uploadFileFieldAccept" />
       <button :disabled="!uploadFile" @click="onButtonUploadClick">Upload</button>
     </div>
     <div class="control-item">
-      <label>Image width:</label>
-      <select v-model="imgWidth">
+      <label for="select-img-width">Image width:</label>
+      <select id="select-img-width" v-model="imgWidth">
         <option v-for="imgWidth in imgWidths" :key="imgWidth" :value="imgWidth">
           {{ imgWidth }}
         </option>
       </select>
     </div>
     <div class="control-item">
-      <label>Filter:</label>
-      <input type="text" v-model="filtertext" />
+      <label for="filter-text">Filter:</label>
+      <input id="filter-text" type="text" v-model="filtertext" />
     </div>
   </div>
   <FotoAlbum :fotos="fotos" :imgWidth="imgWidth" />
