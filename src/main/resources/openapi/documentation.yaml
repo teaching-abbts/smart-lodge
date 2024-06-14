@@ -4,7 +4,7 @@ info:
   description: "smart_lodge API"
   version: "1.0.0"
 servers:
-- url: "https://smart_lodge"
+- url: "https://localhost:8080"
 paths:
   /fotoalbum:
     get:
