@@ -40,9 +40,9 @@ dependencies {
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 }
 
-data class CommandClineConfig(val cmd: String, val windowsCmd: String? = null)
+data class CommandLineConfig(val cmd: String, val windowsCmd: String? = null)
 
-fun Exec.runCommandLine(commandLineConfig: CommandClineConfig) {
+fun Exec.runCommandLine(commandLineConfig: CommandLineConfig) {
   val isWindows = System.getProperty("os.name").lowercase().contains("windows")
 
   if (isWindows) {
@@ -53,7 +53,7 @@ fun Exec.runCommandLine(commandLineConfig: CommandClineConfig) {
 }
 
 fun Exec.runCommandLine(vararg arguments: String) {
-  runCommandLine()
+  runCommandLine(CommandLineConfig(arguments.joinToString(" ")))
 }
 
 tasks.register<Exec>("build-vue") {
@@ -77,6 +77,6 @@ tasks.register<Exec>("build-continuously") {
   description = "builds the Ktor project continuously."
   workingDir = File(".")
 
-  val config = CommandClineConfig("gradlew build -t", "gradlew.bat build -t")
+  val config = CommandLineConfig("gradlew build -t", "gradlew.bat build -t")
   runCommandLine(config)
 }
