@@ -1,5 +1,6 @@
 package ch.abbts.smartlodge
 
+import ch.abbts.smartlodge.plugins.configureHTTP
 import ch.abbts.smartlodge.plugins.configureRouting
 import ch.abbts.smartlodge.plugins.configureSerialization
 import ch.abbts.smartlodge.plugins.configureTemplating
@@ -13,13 +14,13 @@ const val KEY_STORE_PASSWORD = "123456"
 const val KEY_ALIAS = "sampleAlias"
 const val PRIVATE_KEY_PASSWORD = "foobar"
 const val HTTP_PORT = 8080
-//const val HTTPS_PORT = 8443
+const val HTTPS_PORT = 8443
 const val HOST_BINDING = "0.0.0.0"
 
 fun Application.hostModule() {
   configureTemplating()
   configureSerialization()
-//  configureHTTP()
+  configureHTTP()
   configureRouting()
 }
 
@@ -42,20 +43,22 @@ fun ApplicationEngineEnvironmentBuilder.envConfig() {
     port = HTTP_PORT
   }
 
-//  sslConnector(
-//      keyStore = keyStore,
-//      keyAlias = KEY_ALIAS,
-//      keyStorePassword = { KEY_STORE_PASSWORD.toCharArray() },
-//      privateKeyPassword = { PRIVATE_KEY_PASSWORD.toCharArray() }
-//  ) {
-//    port = HTTPS_PORT
-//    keyStorePath = keyStoreFile
-//  }
+  sslConnector(
+      keyStore = keyStore,
+      keyAlias = KEY_ALIAS,
+      keyStorePassword = { KEY_STORE_PASSWORD.toCharArray() },
+      privateKeyPassword = { PRIVATE_KEY_PASSWORD.toCharArray() }
+  ) {
+    port = HTTPS_PORT
+    keyStorePath = keyStoreFile
+  }
 
-  watchPaths = listOf("classes")
+  watchPaths = listOf("classes", "resources")
 }
 
 fun main() {
-  val env = applicationEngineEnvironment { envConfig() }
-  embeddedServer(Netty, env).start(wait = true)
+  val envConfig = applicationEngineEnvironment { envConfig() }
+
+  embeddedServer(Netty, envConfig)
+    .start(wait = true)
 }

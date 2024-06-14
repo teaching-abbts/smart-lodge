@@ -1,0 +1,8 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="DEVELOP" type="CompoundRunConfigurationType">
+    <toRun name="smart-lodge [build -t -x test -i]" type="GradleRunConfiguration" />
+    <toRun name="smart-lodge [run-vue-watch]" type="GradleRunConfiguration" />
+    <toRun name="smart-lodge [run]" type="GradleRunConfiguration" />
+    <method v="2" />
+  </configuration>
+</component>

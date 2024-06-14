@@ -70,6 +70,8 @@ fun Application.configureRouting() {
     }
 
     staticFiles("/openapi", File("src/main/resources/openapi"))
-    swaggerUI(path = "swagger", swaggerFile = "openapi/documentation.yaml")
+    swaggerUI(path = "swagger", swaggerFile = "openapi/documentation.yaml") {
+      version = "5.17.14"
+    }
   }
 }
