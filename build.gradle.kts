@@ -1,41 +1,59 @@
+@file:Suppress("PropertyName")
+
 val kotlin_version: String by project
 val logback_version: String by project
 val ktor_version: String by project
 
 plugins {
-    kotlin("jvm") version "2.0.0"
-    kotlin("plugin.serialization") version "2.0.0"
-    id("io.ktor.plugin") version "2.3.11"
+  kotlin("jvm") version "2.0.0"
+  kotlin("plugin.serialization") version "2.0.0"
+  id("io.ktor.plugin") version "2.3.11"
 }
 
 group = "ch.abbts.smartlodge"
 version = "0.0.1"
 
 application {
-    mainClass.set("ch.abbts.smartlodge.ApplicationKt")
+  mainClass.set("ch.abbts.smartlodge.ApplicationKt")
 
-    val isDevelopment: Boolean = project.ext.has("development")
-    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
+  val isDevelopment: Boolean = project.ext.has("development")
+  applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
 
 repositories {
-    mavenCentral()
+  mavenCentral()
 }
 
 dependencies {
-    implementation("io.ktor:ktor-network-tls-certificates:$ktor_version")
-    implementation("io.ktor:ktor-server-core-jvm")
-    implementation("io.ktor:ktor-server-freemarker-jvm")
-    implementation("io.ktor:ktor-server-content-negotiation-jvm")
-    implementation("io.ktor:ktor-server-host-common-jvm")
-    implementation("io.ktor:ktor-server-http-redirect-jvm")
-    implementation("io.ktor:ktor-server-swagger-jvm")
-    implementation("io.ktor:ktor-server-netty-jvm")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
-    implementation("io.ktor:ktor-serialization-kotlinx-xml:$ktor_version")
-    implementation("ch.qos.logback:logback-classic:$logback_version")
-    testImplementation("io.ktor:ktor-server-tests-jvm")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+  implementation("io.ktor:ktor-network-tls-certificates:$ktor_version")
+  implementation("io.ktor:ktor-server-core-jvm")
+  implementation("io.ktor:ktor-server-freemarker-jvm")
+  implementation("io.ktor:ktor-server-content-negotiation-jvm")
+  implementation("io.ktor:ktor-server-host-common-jvm")
+  implementation("io.ktor:ktor-server-http-redirect-jvm")
+  implementation("io.ktor:ktor-server-swagger-jvm")
+  implementation("io.ktor:ktor-server-netty-jvm")
+  implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
+  implementation("io.ktor:ktor-serialization-kotlinx-xml:$ktor_version")
+  implementation("ch.qos.logback:logback-classic:$logback_version")
+  testImplementation("io.ktor:ktor-server-tests-jvm")
+  testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+}
+
+data class CommandClineConfig(val cmd: String, val windowsCmd: String? = null)
+
+fun Exec.runCommandLine(commandLineConfig: CommandClineConfig) {
+  val isWindows = System.getProperty("os.name").lowercase().contains("windows")
+
+  if (isWindows) {
+    commandLine("cmd.exe", "/C", commandLineConfig.windowsCmd ?: commandLineConfig.cmd)
+  } else {
+    commandLine(commandLineConfig.cmd.splitToSequence(' ').toList())
+  }
+}
+
+fun Exec.runCommandLine(vararg arguments: String) {
+  runCommandLine()
 }
 
 tasks.register<Exec>("build-vue") {
@@ -43,14 +61,7 @@ tasks.register<Exec>("build-vue") {
   description = "builds the vue-project."
   workingDir = File("src/main/vue-project")
 
-  val npmScript = "build"
-
-  if (System.getProperty("os.name").lowercase().contains("windows")) {
-    commandLine("cmd.exe", "/C", "npm run $npmScript")
-  }
-  else {
-    commandLine("npm", "run", npmScript)
-  }
+  runCommandLine("npm", "run", "build")
 }
 
 tasks.register<Exec>("run-vue-watch") {
@@ -58,14 +69,7 @@ tasks.register<Exec>("run-vue-watch") {
   description = "builds the vue-project continuously."
   workingDir = File("src/main/vue-project")
 
-  val npmScript = "build-watch"
-
-  if (System.getProperty("os.name").lowercase().contains("windows")) {
-    commandLine("cmd.exe", "/C", "npm run $npmScript")
-  }
-  else {
-    commandLine("npm", "run", npmScript)
-  }
+  runCommandLine("npm", "run", "build-watch")
 }
 
 tasks.register<Exec>("build-continuously") {
@@ -73,16 +77,6 @@ tasks.register<Exec>("build-continuously") {
   description = "builds the Ktor project continuously."
   workingDir = File(".")
 
-  if (System.getProperty("os.name").lowercase().contains("windows")) {
-    commandLine("cmd.exe", "/C", "gradlew.bat", "build", "-t")
-  }
-  else {
-    commandLine("gradlew", "build", "-t", "--parallel")
-  }
+  val config = CommandClineConfig("gradlew build -t", "gradlew.bat build -t")
+  runCommandLine(config)
 }
-
-// tasks.register<GradleBuild>("DEVELOP") {
-//   group = "application"
-//   description = "runs all necessary tasks at once."
-//   tasks = listOf("build-continuously", "run-vue-watch", "run")
-// }
