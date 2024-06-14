@@ -67,3 +67,22 @@ tasks.register<Exec>("run-vue-watch") {
     commandLine("npm", "run", npmScript)
   }
 }
+
+tasks.register<Exec>("build-continuously") {
+  group = "application"
+  description = "builds the Ktor project continuously."
+  workingDir = File(".")
+
+  if (System.getProperty("os.name").lowercase().contains("windows")) {
+    commandLine("cmd.exe", "/C", "gradlew.bat", "build", "-t")
+  }
+  else {
+    commandLine("gradlew", "build", "-t", "--parallel")
+  }
+}
+
+// tasks.register<GradleBuild>("DEVELOP") {
+//   group = "application"
+//   description = "runs all necessary tasks at once."
+//   tasks = listOf("build-continuously", "run-vue-watch", "run")
+// }
