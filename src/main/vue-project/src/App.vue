@@ -32,5 +32,3 @@ function toggleTheme() {
     </v-main>
   </v-app>
 </template>
-
-<style scoped></style>
