@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import FotoAlbum, { type Foto } from '@/components/FotoAlbum.vue'
-import FileInput from '../components/FileInput.vue'
 
 const fotoalbum = ref<{ fotos: Foto[] }>()
 const filtertext = ref()
@@ -59,25 +58,22 @@ onMounted(fetchFotoalbumFromServer)
 </script>
 
 <template>
-  <div class="controls">
-    <div class="control-item">
-      <label for="upload-file">Upload:</label>
-      <FileInput id="upload-file" v-model="uploadFile" :accept="uploadFileFieldAccept" />
-      <button :disabled="!uploadFile" @click="onButtonUploadClick">Upload</button>
-    </div>
-    <div class="control-item">
-      <label for="select-img-width">Image width:</label>
-      <select id="select-img-width" v-model="imgWidth">
-        <option v-for="imgWidth in imgWidths" :key="imgWidth" :value="imgWidth">
-          {{ imgWidth }}
-        </option>
-      </select>
-    </div>
-    <div class="control-item">
-      <label for="filter-text">Filter:</label>
-      <input id="filter-text" type="text" v-model="filtertext" />
-    </div>
-  </div>
+  <v-container>
+    <v-row>
+      <v-col>
+        <v-file-input label="File input" v-model="uploadFile" :accept="uploadFileFieldAccept" />
+      </v-col>
+      <v-col>
+        <v-btn :disabled="!uploadFile" @click="onButtonUploadClick" size="x-large"> Upload </v-btn>
+      </v-col>
+      <v-col>
+        <v-select label="Image width:" v-model="imgWidth" :items="imgWidths" />
+      </v-col>
+      <v-col>
+        <v-text-field label="Filter:" v-model="filtertext" />
+      </v-col>
+    </v-row>
+  </v-container>
   <FotoAlbum :fotos="fotos" :imgWidth="imgWidth" />
 </template>
 
