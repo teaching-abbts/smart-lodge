@@ -6,5 +6,6 @@ import io.ktor.server.application.*
 
 fun Application.configureRouting() {
   configureSinglePageApplication()
+  configureOpenApi()
   configureFotoalbum()
 }
