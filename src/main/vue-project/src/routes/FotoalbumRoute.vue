@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import FotoAlbum, { type Foto } from '@/components/FotoAlbum.vue'
+import FotoAlbum, { type Foto } from '@/components/Fotoalbum.vue'
 
 const fotoalbum = ref<{ fotos: Foto[] }>()
 const filtertext = ref()

@@ -43,7 +43,7 @@ fun Exec.runCommandLine(commandLineConfig: CommandLineConfig) {
   val isWindows = System.getProperty("os.name").lowercase().contains("windows")
 
   if (isWindows) {
-    commandLine("cmd.exe", "/C", commandLineConfig.windowsCmd ?: commandLineConfig.cmd)
+     commandLine("cmd.exe", "/C", commandLineConfig.windowsCmd ?: commandLineConfig.cmd)
   } else {
     commandLine(commandLineConfig.cmd.splitToSequence(' ').toList())
   }
@@ -53,10 +53,15 @@ fun Exec.runCommandLine(vararg arguments: String) {
   runCommandLine(CommandLineConfig(arguments.joinToString(" ")))
 }
 
+fun getPid(): Long {
+  return ProcessHandle.current().pid()
+}
+
 tasks.register<Exec>("install-vue") {
   group = "build setup"
   description = "installs all the npm packages for the the vue-project."
   workingDir = File("src/main/vue-project")
+  environment("PID", getPid())
 
   runCommandLine("npm", "ci")
 }
@@ -65,6 +70,7 @@ tasks.register<Exec>("build-vue") {
   group = "build"
   description = "builds the vue-project."
   workingDir = File("src/main/vue-project")
+  environment("PID", getPid())
 
   runCommandLine("npm", "run", "build")
 }
@@ -73,6 +79,7 @@ tasks.register<Exec>("run-vue-watch") {
   group = "application"
   description = "builds the vue-project continuously."
   workingDir = File("src/main/vue-project")
+  environment("PID", getPid())
 
   runCommandLine("npm", "run", "build-watch")
 }
@@ -81,6 +88,7 @@ tasks.register<Exec>("build-continuously") {
   group = "application"
   description = "builds the Ktor project continuously."
   workingDir = File(".")
+  environment("PID", getPid())
 
   val arguments = "build -t -x test -i"
   val config = CommandLineConfig("gradlew $arguments", "gradlew.bat $arguments")
