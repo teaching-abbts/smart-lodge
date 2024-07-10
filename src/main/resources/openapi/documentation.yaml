@@ -41,6 +41,16 @@ paths:
   /upload-images:
     post:
       description: ""
+  /user-info:
+    get:
+      description: ""
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserInfo"
   /login:
     get:
       description: ""
@@ -55,6 +65,31 @@ paths:
                 text/html:
                   description: "HTML document"
                   value: ""
+    post:
+      description: ""
+      responses:
+        "302":
+          description: "Found <br> Redirect"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "/"
+  /logout:
+    get:
+      description: ""
+      responses:
+        "302":
+          description: "Found <br> Redirect"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "/login"
 components:
   schemas:
     Foto:
@@ -76,6 +111,13 @@ components:
             $ref: "#/components/schemas/Foto"
       required:
       - "fotos"
+    UserInfo:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+      required:
+      - "username"
     Function1:
       type: "object"
       properties: {}
