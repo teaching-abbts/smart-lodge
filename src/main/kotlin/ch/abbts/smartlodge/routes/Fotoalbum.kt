@@ -22,7 +22,7 @@ data class Fotoalbum(val fotos: List<Foto>)
 
 fun Application.configureFotoalbum() {
   routing {
-    authenticate("auth-basic") {
+    authenticate("auth-session") {
       get("/image/{imageName}") {
         val imageName = call.parameters["imageName"]
         call.respondFile(File("$IMAGE_UPLOAD_DIRECTORY/$imageName"))

@@ -12,7 +12,7 @@ fun main() {
   val appEnginEnv = applicationEngineEnvironment {
     module {
       installHttps(HTTPS_PORT)
-      installBasicAuthentication()
+      installSessionAndAuthentication()
       installFreeMarkerTemplating()
       installSerialization()
       configureRouting()

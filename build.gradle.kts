@@ -40,6 +40,8 @@ dependencies {
   implementation("io.ktor:ktor-server-http-redirect:$ktor_version")
   implementation("io.ktor:ktor-network-tls-certificates:$ktor_version")
   implementation("io.ktor:ktor-server-auth:$ktor_version")
+  implementation("io.ktor:ktor-server-html-builder:$ktor_version")
+  implementation("io.ktor:ktor-server-sessions:$ktor_version")
   testImplementation("io.ktor:ktor-server-tests:$ktor_version")
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 }

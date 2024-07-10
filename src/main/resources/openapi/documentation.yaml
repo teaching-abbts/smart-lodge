@@ -41,6 +41,20 @@ paths:
   /upload-images:
     post:
       description: ""
+  /login:
+    get:
+      description: ""
+      responses:
+        "200":
+          description: "OK"
+          content:
+            text/plain:
+              schema:
+                $ref: "#/components/schemas/Function1_? super HTML"
+              examples:
+                text/html:
+                  description: "HTML document"
+                  value: ""
 components:
   schemas:
     Foto:
@@ -62,3 +76,8 @@ components:
             $ref: "#/components/schemas/Foto"
       required:
       - "fotos"
+    Function1:
+      type: "object"
+      properties: {}
+    Function1_? super HTML:
+      type: "object"
