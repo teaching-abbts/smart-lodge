@@ -1,6 +1,6 @@
 package ch.abbts.smartlodge.plugins
 
-import ch.abbts.smartlodge.security.AuthenticationService
+import ch.abbts.smartlodge.services.AuthenticationService
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.html.*
@@ -13,6 +13,8 @@ import org.koin.ktor.ext.inject
 data class UserSession(val name: String) : Principal
 
 const val LOGIN_URL = "/login"
+const val USER_PARAM_NAME = "username"
+const val PASSWORD_PARAM_NAME = "password"
 
 fun Application.installSessionAndAuthentication() {
   val authenticationService by inject<AuthenticationService>()
@@ -21,14 +23,14 @@ fun Application.installSessionAndAuthentication() {
   install(Sessions) {
     cookie<UserSession>("user_session") {
       cookie.path = "/"
-      cookie.maxAgeInSeconds = 60
+      cookie.maxAgeInSeconds = 300
     }
   }
 
   install(Authentication) {
     form("auth-form") {
-      userParamName = "username"
-      passwordParamName = "password"
+      userParamName = USER_PARAM_NAME
+      passwordParamName = PASSWORD_PARAM_NAME
       validate { credential ->
         authenticationService.authenticate(credential)
       }
@@ -55,11 +57,11 @@ fun Application.installSessionAndAuthentication() {
           form(action = LOGIN_URL, encType = FormEncType.applicationXWwwFormUrlEncoded, method = FormMethod.post) {
             p {
               +"Username:"
-              textInput(name = "username")
+              textInput(name = USER_PARAM_NAME)
             }
             p {
               +"Password:"
-              passwordInput(name = "password")
+              passwordInput(name = PASSWORD_PARAM_NAME)
             }
             p {
               submitInput() { value = "Login" }
@@ -71,7 +73,8 @@ fun Application.installSessionAndAuthentication() {
 
     authenticate("auth-form") {
       post(LOGIN_URL) {
-        val userName = call.principal<UserIdPrincipal>()?.name.toString()
+        val principal = call.principal<UserIdPrincipal>();
+        val userName = principal?.name.toString()
         val userSession = UserSession(name = userName)
         call.sessions.set(userSession)
         call.respondRedirect("/")

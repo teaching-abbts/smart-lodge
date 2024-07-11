@@ -1,6 +1,6 @@
 package ch.abbts.smartlodge.plugins
 
-import ch.abbts.smartlodge.security.AuthenticationService
+import ch.abbts.smartlodge.services.*
 import io.ktor.server.application.*
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module

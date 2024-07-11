@@ -1,4 +1,4 @@
-package ch.abbts.smartlodge.security
+package ch.abbts.smartlodge.services
 
 import io.ktor.server.auth.*
 import io.ktor.util.*

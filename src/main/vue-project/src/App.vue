@@ -16,9 +16,12 @@ function logout() {
   location.href = '/logout'
 }
 
+async function getUserInfo() {
+  userInfo.value = await fetch('/user-info').then((response) => response.json())
+}
+
 onMounted(async () => {
-  const response = await fetch('/user-info')
-  userInfo.value = await response.json()
+  await getUserInfo()
 })
 </script>
 
