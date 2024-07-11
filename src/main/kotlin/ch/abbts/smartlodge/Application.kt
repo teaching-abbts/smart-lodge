@@ -11,10 +11,12 @@ const val HOST_BINDING = "0.0.0.0"
 fun main() {
   val appEnginEnv = applicationEngineEnvironment {
     module {
+      installKoinDependencyInjection()
       installHttps(HTTPS_PORT)
       installSessionAndAuthentication()
       installFreeMarkerTemplating()
       installSerialization()
+
       configureRouting()
     }
 

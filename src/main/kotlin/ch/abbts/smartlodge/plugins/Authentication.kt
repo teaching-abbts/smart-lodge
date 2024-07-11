@@ -1,5 +1,6 @@
 package ch.abbts.smartlodge.plugins
 
+import ch.abbts.smartlodge.security.AuthenticationService
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.html.*
@@ -7,47 +8,51 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import kotlinx.html.*
+import org.koin.ktor.ext.inject
 
-data class UserSession(val name: String, val count: Int) : Principal
+data class UserSession(val name: String) : Principal
+
+const val LOGIN_URL = "/login"
 
 fun Application.installSessionAndAuthentication() {
+  val authenticationService by inject<AuthenticationService>()
+
+
   install(Sessions) {
     cookie<UserSession>("user_session") {
       cookie.path = "/"
       cookie.maxAgeInSeconds = 60
     }
   }
+
   install(Authentication) {
     form("auth-form") {
       userParamName = "username"
       passwordParamName = "password"
-      validate { credentials ->
-        if (credentials.name == "jetbrains" && credentials.password == "foobar") {
-          UserIdPrincipal(credentials.name)
-        } else {
-          null
-        }
+      validate { credential ->
+        authenticationService.authenticate(credential)
       }
     }
     session<UserSession>("auth-session") {
       validate { session ->
-        if(session.name.startsWith("jet")) {
-          session
-        } else {
-          null
-        }
+//        if (session.name.startsWith("jet")) {
+//          session
+//        } else {
+//          null
+//        }
+        session
       }
       challenge {
-        call.respondRedirect("/login")
+        call.respondRedirect(LOGIN_URL)
       }
     }
   }
 
   routing {
-    get("/login") {
+    get(LOGIN_URL) {
       call.respondHtml {
         body {
-          form(action = "/login", encType = FormEncType.applicationXWwwFormUrlEncoded, method = FormMethod.post) {
+          form(action = LOGIN_URL, encType = FormEncType.applicationXWwwFormUrlEncoded, method = FormMethod.post) {
             p {
               +"Username:"
               textInput(name = "username")
@@ -65,16 +70,17 @@ fun Application.installSessionAndAuthentication() {
     }
 
     authenticate("auth-form") {
-      post("/login") {
+      post(LOGIN_URL) {
         val userName = call.principal<UserIdPrincipal>()?.name.toString()
-        call.sessions.set(UserSession(name = userName, count = 1))
+        val userSession = UserSession(name = userName)
+        call.sessions.set(userSession)
         call.respondRedirect("/")
       }
     }
 
     get("/logout") {
       call.sessions.clear<UserSession>()
-      call.respondRedirect("/login")
+      call.respondRedirect(LOGIN_URL)
     }
   }
 }

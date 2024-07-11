@@ -4,6 +4,7 @@ val kotlin_version: String by project
 val logback_version: String by project
 val ktor_version: String by project
 val swagger_codegen_version: String by project
+val koin_version: String by project
 
 plugins {
   kotlin("jvm") version "2.0.0"
@@ -42,6 +43,7 @@ dependencies {
   implementation("io.ktor:ktor-server-auth:$ktor_version")
   implementation("io.ktor:ktor-server-html-builder:$ktor_version")
   implementation("io.ktor:ktor-server-sessions:$ktor_version")
+  implementation("io.insert-koin:koin-ktor:$koin_version")
   testImplementation("io.ktor:ktor-server-tests:$ktor_version")
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 }

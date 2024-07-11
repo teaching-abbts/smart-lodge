@@ -1,4 +1,4 @@
-package ch.abbts.smartlodge.plugins
+package ch.abbts.smartlodge.routes
 
 import io.ktor.server.application.*
 import io.ktor.server.plugins.openapi.*
