@@ -6,6 +6,7 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
 
+// https://insert-koin.io/
 var defaultKoinModule = module {
   singleOf(::AuthenticationService)
 }

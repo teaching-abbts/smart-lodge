@@ -3,11 +3,10 @@ package ch.abbts.smartlodge.plugins
 import ch.abbts.smartlodge.services.AuthenticationService
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
-import io.ktor.server.html.*
+import io.ktor.server.freemarker.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
-import kotlinx.html.*
 import org.koin.ktor.ext.inject
 
 data class UserSession(val name: String) : Principal
@@ -37,11 +36,6 @@ fun Application.installSessionAndAuthentication() {
     }
     session<UserSession>("auth-session") {
       validate { session ->
-//        if (session.name.startsWith("jet")) {
-//          session
-//        } else {
-//          null
-//        }
         session
       }
       challenge {
@@ -50,25 +44,12 @@ fun Application.installSessionAndAuthentication() {
     }
   }
 
+  data class LoginModel(val postUrl: String, val userParamName: String, val passwordParamName: String)
+
   routing {
     get(LOGIN_URL) {
-      call.respondHtml {
-        body {
-          form(action = LOGIN_URL, encType = FormEncType.applicationXWwwFormUrlEncoded, method = FormMethod.post) {
-            p {
-              +"Username:"
-              textInput(name = USER_PARAM_NAME)
-            }
-            p {
-              +"Password:"
-              passwordInput(name = PASSWORD_PARAM_NAME)
-            }
-            p {
-              submitInput() { value = "Login" }
-            }
-          }
-        }
-      }
+      val loginModel = LoginModel(LOGIN_URL, USER_PARAM_NAME, PASSWORD_PARAM_NAME)
+      call.respond(FreeMarkerContent("login.ftl", mapOf("login" to loginModel)))
     }
 
     authenticate("auth-form") {
