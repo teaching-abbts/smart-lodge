@@ -48,10 +48,14 @@ class SmartHomeDataService {
   private var data: SmartHomeData? = null
 
   private suspend fun fetchData() {
-    val response = httpClient.get("http://127.0.0.1:11001/smart-quartier/data-service/history")
+    try {
+      val response = httpClient.get("http://127.0.0.1:11001/smart-quartier/data-service/history")
 
-    if (response.status == HttpStatusCode.OK) {
-      data = response.body<SmartHomeData>()
+      if (response.status == HttpStatusCode.OK) {
+        data = response.body<SmartHomeData>()
+      }
+    } catch (e: Exception) {
+      println(e.message)
     }
   }
 
