@@ -38,7 +38,11 @@ data class SmartHomeData(
 @Serializable
 data class SmartHome(val buildingID: String)
 
-class SmartHomeDataService {
+class SmartHomeDataService(
+  private val hostname: String = "127.0.0.1",
+  private val port: Int = 11001,
+  private val useHttps: Boolean = false
+) {
   private val httpClient: HttpClient = HttpClient(CIO) {
     install(Resources)
     install(ContentNegotiation) {
@@ -48,10 +52,15 @@ class SmartHomeDataService {
   private var data: SmartHomeData? = null
 
   private suspend fun fetchData() {
-    val response = httpClient.get("http://127.0.0.1:11001/smart-quartier/data-service/history")
+    try {
+      val protocol = if (useHttps) "https" else "http"
+      val response = httpClient.get("$protocol://$hostname:$port/smart-quartier/data-service/history")
 
-    if (response.status == HttpStatusCode.OK) {
-      data = response.body<SmartHomeData>()
+      if (response.status == HttpStatusCode.OK) {
+        data = response.body<SmartHomeData>()
+      }
+    } catch (e: Exception) {
+      println(e.message)
     }
   }
 

@@ -12,6 +12,8 @@ const val HTTPS_PORT = 8443
 const val HOST_BINDING = "0.0.0.0"
 
 suspend fun main() {
+  val enableHttps = System.getenv("DISABLE_HTTPS") != "true"
+
   coroutineScope {
     val smartHomeDataService = SmartHomeDataService()
 
@@ -22,7 +24,12 @@ suspend fun main() {
     val appEnginEnv = applicationEngineEnvironment {
       module {
         installKoinDependencyInjection()
-        installHttps(HTTPS_PORT)
+
+        if (enableHttps) {
+          installHttpsRedirect(HTTPS_PORT)
+        }
+
+        installForwardedHeaders()
         installSessionAndAuthentication()
         installFreeMarkerTemplating()
         installSerialization()
@@ -31,7 +38,10 @@ suspend fun main() {
       }
 
       configureHttp(HOST_BINDING, HTTP_PORT)
-      configureHttps(HOST_BINDING, HTTPS_PORT)
+
+      if (enableHttps) {
+        configureHttps(HOST_BINDING, HTTPS_PORT)
+      }
 
       watchPaths = listOf("classes", "resources")
     }

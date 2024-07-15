@@ -3,14 +3,20 @@ package ch.abbts.smartlodge.plugins
 import io.ktor.network.tls.certificates.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
+import io.ktor.server.plugins.forwardedheaders.*
 import io.ktor.server.plugins.httpsredirect.*
 import java.io.File
 
-fun Application.installHttps(port: Int) {
+fun Application.installHttpsRedirect(port: Int) {
   install(HttpsRedirect) {
     sslPort = port
     permanentRedirect = false
   }
+}
+
+fun Application.installForwardedHeaders() {
+  install(ForwardedHeaders)
+  install(XForwardedHeaders)
 }
 
 fun ApplicationEngineEnvironmentBuilder.configureHttps(hostBinding: String, port: Int) {

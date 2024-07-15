@@ -48,6 +48,7 @@ dependencies {
   implementation("io.ktor:ktor-client-cio:$ktor_version")
   implementation("io.ktor:ktor-client-resources:$ktor_version")
   implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
+  implementation("io.ktor:ktor-server-forwarded-header:$ktor_version")
   testImplementation("io.ktor:ktor-server-tests:$ktor_version")
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 }
@@ -74,7 +75,6 @@ fun Exec.runCommandLine(vararg arguments: String) {
 
 fun Exec.runNpmCommand(vararg npmArguments: String) {
   workingDir = File("src/main/vue-project")
-  environment("PID", getPid())
 
   runCommandLine("npm " + npmArguments.joinToString(" "))
 }
@@ -82,6 +82,7 @@ fun Exec.runNpmCommand(vararg npmArguments: String) {
 tasks.register<Exec>("install-vue") {
   group = "build setup"
   description = "installs all the npm packages for the the vue-project."
+
   runNpmCommand("ci")
 }
 
@@ -94,5 +95,9 @@ tasks.register<Exec>("build-vue") {
 tasks.register<Exec>("run-vue-watch") {
   group = "application"
   description = "builds the vue-project continuously."
+
+  // The PID of the current jvm instance for the 'syncLifetimeToPidPlugin' in the vue-project.
+  // -> See reasoning within the plugin.
+  environment("PID", getPid())
   runNpmCommand("run", "build-watch")
 }
