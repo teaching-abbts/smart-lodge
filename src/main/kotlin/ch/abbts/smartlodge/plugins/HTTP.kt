@@ -6,7 +6,7 @@ import io.ktor.server.engine.*
 import io.ktor.server.plugins.httpsredirect.*
 import java.io.File
 
-fun Application.installHttps(port: Int) {
+fun Application.installHttpsRedirect(port: Int) {
   install(HttpsRedirect) {
     sslPort = port
     permanentRedirect = false

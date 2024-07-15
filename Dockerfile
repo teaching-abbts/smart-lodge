@@ -10,6 +10,7 @@ RUN gradle \
     install-vue build-vue buildFatJar
 
 FROM alpine:3.20 AS runtime
+ENV DISABLE_HTTPS="true"
 RUN apk add --no-cache openjdk21-jre
 WORKDIR "/app"
 COPY --from=kotlin_build "/source/src/main/vue-project/dist" "src/main/vue-project/dist"
