@@ -4,6 +4,13 @@ import psList from 'ps-list'
 
 type SyncLifetimeToPidPluginConfig = { envVarName: string; observeChildren: boolean }
 
+/**
+ * Observes a given process for termination - if said process terminates, this plugin ensures that this node.js process is properly terminated as well.
+ *
+ * Reasoning:
+ * Due to the way gradle runs shell commands on windows, node.js child-processes are not properly terminated when debugging is stopped.
+ * @param config
+ */
 export function syncLifetimeToPidPlugin(config?: SyncLifetimeToPidPluginConfig): Plugin {
   const envVarName = config?.envVarName ?? 'PID'
   const rawPid = process.env[envVarName]
@@ -12,7 +19,12 @@ export function syncLifetimeToPidPlugin(config?: SyncLifetimeToPidPluginConfig):
   const observeChildren = config?.observeChildren ?? true
 
   if (isPidInvalid) {
-    throw new Error(`*** '${envVarName}' is not a number: '${rawPid}'`)
+    return {
+      name: 'dummy-plugin',
+      options() {
+        console.log(`*** '${envVarName}' is not a number: '${rawPid}' - skipping PID observation!`)
+      }
+    }
   } else {
     const childProcessObservers: ProcessObserver[] = []
 
