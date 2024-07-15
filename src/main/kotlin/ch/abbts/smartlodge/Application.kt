@@ -29,6 +29,7 @@ suspend fun main() {
           installHttpsRedirect(HTTPS_PORT)
         }
 
+        installForwardedHeaders()
         installSessionAndAuthentication()
         installFreeMarkerTemplating()
         installSerialization()

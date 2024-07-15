@@ -48,6 +48,7 @@ dependencies {
   implementation("io.ktor:ktor-client-cio:$ktor_version")
   implementation("io.ktor:ktor-client-resources:$ktor_version")
   implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
+  implementation("io.ktor:ktor-server-forwarded-header:$ktor_version")
   testImplementation("io.ktor:ktor-server-tests:$ktor_version")
   testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 }
