@@ -7,15 +7,18 @@ import io.ktor.server.netty.*
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
-const val HTTP_PORT = 8080
-const val HTTPS_PORT = 8443
-const val HOST_BINDING = "0.0.0.0"
-
 suspend fun main() {
   val enableHttps = System.getenv("DISABLE_HTTPS") != "true"
 
   coroutineScope {
-    val smartHomeDataService = SmartHomeDataService()
+    val httpPort = System.getenv("HTTP_PORT").toIntOrNull() ?: 8080
+    val httpsPort = System.getenv("HTTPS_PORT").toIntOrNull() ?: 8443
+    val hostBinding = System.getenv("HOST_BINDING") ?: "0.0.0.0"
+    val dataServiceHostname = System.getenv("DATA_SERVICE_HOSTNAME") ?: "localhost"
+    val dataServicePort = System.getenv("DATA_SERVICE_PORT").toIntOrNull() ?: 11001
+    val dataServiceUseHttps = System.getenv("DATA_SERVICE_USE_HTTPS") == "true"
+
+    val smartHomeDataService = SmartHomeDataService(dataServiceHostname, dataServicePort, dataServiceUseHttps)
 
     launch {
       smartHomeDataService.start()
@@ -26,7 +29,7 @@ suspend fun main() {
         installKoinDependencyInjection()
 
         if (enableHttps) {
-          installHttpsRedirect(HTTPS_PORT)
+          installHttpsRedirect(httpsPort)
         }
 
         installForwardedHeaders()
@@ -37,10 +40,10 @@ suspend fun main() {
         configureRouting(smartHomeDataService)
       }
 
-      configureHttp(HOST_BINDING, HTTP_PORT)
+      configureHttp(hostBinding, httpPort)
 
       if (enableHttps) {
-        configureHttps(HOST_BINDING, HTTPS_PORT)
+        configureHttps(hostBinding, httpsPort)
       }
 
       watchPaths = listOf("classes", "resources")
