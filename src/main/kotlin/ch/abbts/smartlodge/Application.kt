@@ -9,17 +9,16 @@ import kotlinx.coroutines.launch
 
 suspend fun main() {
   val enableHttps = System.getenv("DISABLE_HTTPS") != "true"
+  val httpPort = System.getenv("HTTP_PORT")?.toIntOrNull() ?: 8080
+  val httpsPort = System.getenv("HTTPS_PORT")?.toIntOrNull() ?: 8443
+  val hostBinding = System.getenv("HOST_BINDING") ?: "0.0.0.0"
+  val dataServiceHostname = System.getenv("DATA_SERVICE_HOSTNAME") ?: "localhost"
+  val dataServicePort = System.getenv("DATA_SERVICE_PORT")?.toIntOrNull() ?: 11001
+  val dataServiceUseHttps = System.getenv("DATA_SERVICE_USE_HTTPS") == "true"
+
+  val smartHomeDataService = SmartHomeDataService(dataServiceHostname, dataServicePort, dataServiceUseHttps)
 
   coroutineScope {
-    val httpPort = System.getenv("HTTP_PORT").toIntOrNull() ?: 8080
-    val httpsPort = System.getenv("HTTPS_PORT").toIntOrNull() ?: 8443
-    val hostBinding = System.getenv("HOST_BINDING") ?: "0.0.0.0"
-    val dataServiceHostname = System.getenv("DATA_SERVICE_HOSTNAME") ?: "localhost"
-    val dataServicePort = System.getenv("DATA_SERVICE_PORT").toIntOrNull() ?: 11001
-    val dataServiceUseHttps = System.getenv("DATA_SERVICE_USE_HTTPS") == "true"
-
-    val smartHomeDataService = SmartHomeDataService(dataServiceHostname, dataServicePort, dataServiceUseHttps)
-
     launch {
       smartHomeDataService.start()
     }
