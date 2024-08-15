@@ -33,6 +33,9 @@ fun Application.installSessionAndAuthentication() {
       validate { credential ->
         authenticationService.authenticate(credential)
       }
+      challenge {
+        call.respondRedirect(LOGIN_URL)
+      }
     }
     session<UserSession>("auth-session") {
       validate { session ->
