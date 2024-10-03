@@ -18,7 +18,6 @@ const val PASSWORD_PARAM_NAME = "password"
 fun Application.installSessionAndAuthentication() {
   val authenticationService by inject<AuthenticationService>()
 
-
   install(Sessions) {
     cookie<UserSession>("user_session") {
       cookie.path = "/"

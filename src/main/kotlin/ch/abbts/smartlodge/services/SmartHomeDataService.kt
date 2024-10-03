@@ -8,15 +8,20 @@ import io.ktor.client.plugins.resources.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
+import java.io.Closeable
 
 @Serializable
 data class Event(
   val timeStamp: String,  // Format: YYYY-MM-DD hh:mm:ss
   val buildingID: String,
   val type: String,
-  val data: String) {
+  val data: String
+) {
 }
 
 @Serializable
@@ -42,7 +47,7 @@ class SmartHomeDataService(
   private val hostname: String = "127.0.0.1",
   private val port: Int = 11001,
   private val useHttps: Boolean = false
-) {
+) : Closeable {
   private val httpClient: HttpClient = HttpClient(CIO) {
     install(Resources)
     install(ContentNegotiation) {
@@ -50,6 +55,7 @@ class SmartHomeDataService(
     }
   }
   private var data: SmartHomeData? = null
+  private var job: Job? = null
 
   private suspend fun fetchData() {
     try {
@@ -64,10 +70,19 @@ class SmartHomeDataService(
     }
   }
 
-  suspend fun start() {
-    fetchData()
-    delay(10_000L)
-    start()
+  suspend fun start() = coroutineScope {
+    job = launch {
+      while (true) {
+        fetchData()
+        delay(10_000L)
+      }
+    }
+  }
+
+  fun stop() {
+    if (job?.isActive == true) {
+      job?.cancel()
+    }
   }
 
   private fun getGroupedMeasurements(): Map<String, List<Measurement>>? {
@@ -90,5 +105,9 @@ class SmartHomeDataService(
   fun getMeasurementsForBuildingId(buildingId: String): List<Measurement> {
     val measurementGroups = getGroupedMeasurements()
     return measurementGroups?.get(buildingId) ?: return emptyList()
+  }
+
+  override fun close() {
+    stop()
   }
 }
