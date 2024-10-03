@@ -46,7 +46,8 @@ data class SmartHome(val buildingID: String)
 class SmartHomeDataService(
   private val hostname: String = "127.0.0.1",
   private val port: Int = 11001,
-  private val useHttps: Boolean = false
+  private val useHttps: Boolean = false,
+  private val jobDelay: Long = 10_000L
 ) : Closeable {
   private val httpClient: HttpClient = HttpClient(CIO) {
     install(Resources)
@@ -71,10 +72,12 @@ class SmartHomeDataService(
   }
 
   suspend fun start() = coroutineScope {
-    job = launch {
-      while (true) {
-        fetchData()
-        delay(10_000L)
+    if (job == null) {
+      job = launch {
+        while (true) {
+          fetchData()
+          delay(jobDelay)
+        }
       }
     }
   }
@@ -82,6 +85,7 @@ class SmartHomeDataService(
   fun stop() {
     if (job?.isActive == true) {
       job?.cancel()
+      job = null
     }
   }
 
