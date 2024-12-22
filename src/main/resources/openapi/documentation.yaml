@@ -41,6 +41,48 @@ paths:
   /upload-images:
     post:
       description: ""
+  /get-smart-home-measurements:
+    get:
+      description: ""
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Measurement"
+  /get-smart-home-measurment/{buildingID}:
+    get:
+      description: ""
+      parameters:
+      - name: "buildingID"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Measurement"
+  /get-smart-homes:
+    get:
+      description: ""
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/SmartHome"
   /user-info:
     get:
       description: ""
@@ -58,13 +100,17 @@ paths:
         "200":
           description: "OK"
           content:
-            text/plain:
+            '*/*':
               schema:
-                $ref: "#/components/schemas/Function1_? super HTML"
+                $ref: "#/components/schemas/FreeMarkerContent"
               examples:
-                text/html:
-                  description: "HTML document"
-                  value: ""
+                Example#1:
+                  description: ""
+                  value:
+                    template: "login.ftl"
+                    model: "null"
+                    etag: "null"
+                    contentType: "null"
     post:
       description: ""
       responses:
@@ -89,6 +135,7 @@ paths:
                 type: "string"
               examples:
                 Example#1:
+                  description: ""
                   value: "/login"
 components:
   schemas:
@@ -111,6 +158,39 @@ components:
             $ref: "#/components/schemas/Foto"
       required:
       - "fotos"
+    Measurement:
+      type: "object"
+      properties:
+        timeStamp:
+          type: "string"
+        buildingID:
+          type: "string"
+        brightness:
+          type: "integer"
+          format: "int32"
+        temperature:
+          type: "integer"
+          format: "int32"
+        humidity:
+          type: "integer"
+          format: "int32"
+        gas:
+          type: "integer"
+          format: "int32"
+      required:
+      - "timeStamp"
+      - "buildingID"
+      - "brightness"
+      - "temperature"
+      - "humidity"
+      - "gas"
+    SmartHome:
+      type: "object"
+      properties:
+        buildingID:
+          type: "string"
+      required:
+      - "buildingID"
     UserInfo:
       type: "object"
       properties:
@@ -118,8 +198,48 @@ components:
           type: "string"
       required:
       - "username"
-    Function1:
+    Object:
       type: "object"
       properties: {}
-    Function1_? super HTML:
+    HeaderValueParam:
       type: "object"
+      properties:
+        name:
+          type: "string"
+        value:
+          type: "string"
+        escapeValue:
+          type: "boolean"
+      required:
+      - "name"
+      - "value"
+      - "escapeValue"
+    ContentType:
+      type: "object"
+      properties:
+        contentType:
+          type: "string"
+        contentSubtype:
+          type: "string"
+        parameters:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/HeaderValueParam"
+      required:
+      - "contentType"
+      - "contentSubtype"
+      - "parameters"
+    FreeMarkerContent:
+      type: "object"
+      properties:
+        template:
+          type: "string"
+        model:
+          $ref: "#/components/schemas/Object"
+        etag:
+          type: "string"
+        contentType:
+          $ref: "#/components/schemas/ContentType"
+      required:
+      - "template"
+      - "contentType"

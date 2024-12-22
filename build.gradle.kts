@@ -1,10 +1,17 @@
 @file:Suppress("PropertyName")
 
+import java.io.File
+import java.net.URI
+
 val kotlin_version: String by project
 val logback_version: String by project
 val ktor_version: String by project
 val swagger_codegen_version: String by project
 val koin_version: String by project
+val swagger_codegen_cli_url: String by project
+val swagger_codegen_cli: String by project
+val swagger_spec_path: String by project
+val swagger_codegen_client_dir: String by project
 
 plugins {
   kotlin("jvm") version "2.0.0"
@@ -55,6 +62,18 @@ dependencies {
 
 data class CommandLineConfig(val cmd: String, val windowsCmd: String? = null)
 
+fun downloadFileIfNotExists(url: String, destination: String) {
+  val file = File(destination)
+  if (!file.exists()) {
+    URI.create(url).toURL().openStream().use {
+      input -> file.outputStream().use {
+        output -> input.copyTo(output)
+      }
+    }
+    println("'$url' downloaded successfully to '$destination'.") } else { println("'$destination' already exists.")
+  }
+}
+
 fun getPid(): Long {
   return ProcessHandle.current().pid()
 }
@@ -100,4 +119,27 @@ tasks.register<Exec>("run-vue-watch") {
   // -> See reasoning within the plugin.
   environment("PID", getPid())
   runNpmCommand("run", "build-watch")
+}
+
+tasks.register("generateOpenApiClient") {
+  group = "build"
+  description = "generates openapi client"
+  downloadFileIfNotExists(swagger_codegen_cli_url, swagger_codegen_cli)
+  doLast {
+    exec {
+      commandLine(
+        "java", "-jar",
+        swagger_codegen_cli,
+        "generate", "-i",
+        swagger_spec_path,
+        "-l",
+        "typescript-fetch",
+        "-o",
+        swagger_codegen_client_dir)
+    }
+  }
+}
+
+tasks.build {
+  dependsOn("generateOpenApiClient")
 }
